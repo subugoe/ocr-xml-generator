@@ -45,13 +45,15 @@ public class PosChecker {
 		while ((positionLine = posReader.readLine()) != null) {
 			String startNumber = extract("\\ss=\"(.*?)\"", positionLine);
 			String endNumber = extract("\\se=\"(.*?)\"", positionLine);
-			//FileUtils.writeStringToFile(new File("/tmp/bla.txt"), coordinates + "\n", true);
 			
 			if ("".equals(startNumber) && "".equals(endNumber)) {
+				posReader.close();
 				return;
 			}
 			if (!startNumber.equals(endNumber)) {
+				FileUtils.writeStringToFile(new File("/home/dennis/nl-hosting/bad-coords.txt"), child.getAbsolutePath() + "\n", true);
 				System.out.println(child.getAbsolutePath());
+				posReader.close();
 				return;
 			}
 		}

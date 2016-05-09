@@ -2,10 +2,14 @@ package sub.ocr;
 
 import static org.junit.Assert.*;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.junit.After;
@@ -25,20 +29,20 @@ public class ToXmlMergerTest {
 	@Test
 	public void test() throws Exception {
 		ToXmlMerger merger = new ToXmlMerger();
-		
-		InputStream ocrText = readFile("test.txt");
-		InputStream positionsText = readFile("test.pos");
+
+		File tifImage = readFile("testFiles/Ab/Ab.tif");
+		File ocrText = readFile("testFiles/Ab/Ab.txt");
+		File positionsText = readFile("testFiles/Ab/Ab.org_pos");
 		ByteArrayOutputStream outXml = new ByteArrayOutputStream();
 
-		merger.merge(ocrText, positionsText, outXml);
-		
+		merger.merge(tifImage, ocrText, positionsText, outXml);
+
 		System.out.println(new String(outXml.toByteArray()));
 	}
-	
-	private InputStream readFile(String file) throws FileNotFoundException {
-		File dir = new File(System.getProperty("user.dir") + "/src/test/resources");
-		return new FileInputStream(new File(dir, file));
-	}
 
+	private File readFile(String file) throws FileNotFoundException {
+		File dir = new File(System.getProperty("user.dir") + "/src/test/resources");
+		return new File(dir, file);
+	}
 
 }
