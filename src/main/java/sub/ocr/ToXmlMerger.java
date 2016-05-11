@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
@@ -42,18 +44,42 @@ public class ToXmlMerger {
 		int c;
 		String positionLine = "";
 		int previousLeft = 0;
+		int previousCharNumberInXml = -1;
 		while ((c = textReader.read()) != -1) {
 
 			if (c != '\r' && c != '\n' && c != 65279) {
 				positionLine = posReader.readLine();
-				int currentLeft = getLeftCoordinate(positionLine);
+				if (positionLine == null || positionLine.equals("")) {
+					break;
+				}
+				boolean positionsAreInXmlTags = positionLine.startsWith("<R");
+
+				if (positionsAreInXmlTags) {
+					int currentCharNumber = Integer.parseInt(extract("\\ss=\"(.*?)\"", positionLine));
+					for (int i = previousCharNumberInXml + 1; i < currentCharNumber; i++) {
+						c = textReader.read();
+					}
+					previousCharNumberInXml = currentCharNumber;
+				}
+
+				int currentLeft = 0;
+				if (positionsAreInXmlTags) {
+					currentLeft = Integer.parseInt(extract("\\sl=\"(.*?)\"", positionLine));
+				} else {
+					currentLeft = getLeftCoordinate(positionLine);
+				}
 				boolean startNewLine = currentLeft < previousLeft;
 				if (startNewLine) {
 					builder.append("</formatting></line>\n");
 					builder.append("<line><formatting>\n");
 				}
 
-				String coordinates = construct(positionLine);
+				String coordinates = null;
+				if (positionsAreInXmlTags) {
+					coordinates = extract("\\s(l=.*)\\sc=", positionLine);
+				} else {
+					coordinates = construct(positionLine);
+				}
 				char character = (char) c;
 				String charString = "" + character;
 				if (specialChars.containsKey(charString)) {
@@ -71,6 +97,15 @@ public class ToXmlMerger {
 		builder.append("</formatting></line></par></text></block></page></document>");
 
 		IOUtils.write(builder.toString(), xmlOutput);
+	}
+
+	private String extract(String regex, String s) {
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(s);
+		while (matcher.find()) {
+			return matcher.group(1);
+		}
+		return "";
 	}
 
 	private String construct(String line) {

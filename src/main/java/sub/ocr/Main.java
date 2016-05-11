@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
+
 public class Main {
 
 	private static File inputDir;
@@ -39,6 +41,15 @@ public class Main {
 
 				File currentOutputDir = prepareOutputDir(currentDir);
 				File currentOutputFile = new File(currentOutputDir, tifFile.getName().replace(".tif", ".xml"));
+				if (currentOutputFile.exists()) {
+					continue;
+				}
+
+				if (!posFile.exists() || !textFile.exists()) {
+					String error = "Text or pos file not found: " + posFile.getAbsolutePath() + "\n";
+					FileUtils.write(new File("/home/dennis/nl-hosting/errors2.txt"), error, true);
+					continue;
+				}
 
 				merger.merge(tifFile, textFile, posFile, new FileOutputStream(currentOutputFile));
 

@@ -1,15 +1,7 @@
 package sub.ocr;
 
-import static org.junit.Assert.*;
-
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.imageio.ImageIO;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.junit.After;
@@ -33,6 +25,20 @@ public class ToXmlMergerTest {
 		File tifImage = readFile("testFiles/Ab/Ab.tif");
 		File ocrText = readFile("testFiles/Ab/Ab.txt");
 		File positionsText = readFile("testFiles/Ab/Ab.org_pos");
+		ByteArrayOutputStream outXml = new ByteArrayOutputStream();
+
+		merger.merge(tifImage, ocrText, positionsText, outXml);
+
+		System.out.println(new String(outXml.toByteArray()));
+	}
+	
+	@Test
+	public void shouldAcceptXmlCoords() throws Exception {
+		ToXmlMerger merger = new ToXmlMerger();
+
+		File tifImage = readFile("testFiles/Ab-with-xml-coords/Ab.tif");
+		File ocrText = readFile("testFiles/Ab-with-xml-coords/Ab.txt");
+		File positionsText = readFile("testFiles/Ab-with-xml-coords/Ab.pos");
 		ByteArrayOutputStream outXml = new ByteArrayOutputStream();
 
 		merger.merge(tifImage, ocrText, positionsText, outXml);
