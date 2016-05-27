@@ -49,7 +49,7 @@ public class ToXmlMerger {
 
 			if (c != '\r' && c != '\n' && c != 65279) {
 				positionLine = posReader.readLine();
-				if (positionLine == null || positionLine.equals("")) {
+				if (positionLine == null || positionLine.trim().equals("")) {
 					break;
 				}
 				boolean positionsAreInXmlTags = positionLine.startsWith("<R");
