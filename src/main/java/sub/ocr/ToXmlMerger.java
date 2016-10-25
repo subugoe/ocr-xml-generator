@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 public class ToXmlMerger {
@@ -33,7 +34,14 @@ public class ToXmlMerger {
 	public void merge(File image, File ocrText, File positionsText, OutputStream xmlOutput) throws IOException {
 		privatePosText = positionsText;
 
-		BufferedImage tifBuffer = ImageIO.read(image);
+		BufferedImage tifBuffer = null;
+		try {
+			tifBuffer = ImageIO.read(image);
+		} catch (Exception e) {
+			String error = "Could nor read file: " + image + "\n" + e.getMessage() + "\n";
+			FileUtils.write(new File("/home/dennis/nl-hosting/errors2.txt"), error, true);
+			return;
+		}
 		StringBuilder builder = new StringBuilder("");
 		builder.append("<document><page width=\"" + tifBuffer.getWidth() + "\" height=\"" + tifBuffer.getHeight()
 				+ "\"><block blockType=\"Text\"><text><par><line><formatting>\n");
