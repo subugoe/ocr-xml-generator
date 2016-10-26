@@ -10,18 +10,20 @@ public class Main {
 
 	private static File inputDir;
 	private static File outputDir;
+	private static File logFile;
 	private static ToXmlMerger merger = new ToXmlMerger();
 	private static int count = 0;
 
 	public static void main(String[] args) throws IOException {
 				
-		if (args.length != 2) {
-			System.out.println("Syntax: java -jar ocr-xml-generator.jar <input-dir> <output-dir>");
+		if (args.length != 3) {
+			System.out.println("Syntax: java -jar ocr-xml-generator.jar <input-dir> <output-dir> <log-file>");
 			System.exit(1);
 		}
 		
 		inputDir = new File(args[0]);
 		outputDir = new File(args[1]);
+		logFile = new File(args[2]);
 
 		processFiles(inputDir);
 	}
@@ -47,10 +49,11 @@ public class Main {
 
 				if (!posFile.exists() || !textFile.exists()) {
 					String error = "Text or pos file not found: " + posFile.getAbsolutePath() + "\n";
-					FileUtils.write(new File("/home/dennis/nl-hosting/errors2.txt"), error, true);
+					FileUtils.write(logFile, error, true);
 					continue;
 				}
 
+				merger.setLogFile(logFile);
 				merger.merge(tifFile, textFile, posFile, new FileOutputStream(currentOutputFile));
 
 			} else if (child.isDirectory()) {

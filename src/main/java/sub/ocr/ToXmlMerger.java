@@ -20,6 +20,7 @@ import org.apache.commons.io.IOUtils;
 public class ToXmlMerger {
 
 	private File privatePosText;
+	private File logFile = new File("/tmp/xml-generator-logs.txt");
 
 	private static Map<String, String> specialChars = new HashMap<String, String>();
 
@@ -31,6 +32,10 @@ public class ToXmlMerger {
 		specialChars.put("'", "&apos;");
 	}
 
+	public void setLogFile(File logFile) {
+		this.logFile = logFile;
+	}
+
 	public void merge(File image, File ocrText, File positionsText, OutputStream xmlOutput) throws IOException {
 		privatePosText = positionsText;
 
@@ -39,7 +44,7 @@ public class ToXmlMerger {
 			tifBuffer = ImageIO.read(image);
 		} catch (Exception e) {
 			String error = "Could nor read file: " + image + "\n" + e.getMessage() + "\n";
-			FileUtils.write(new File("/home/dennis/nl-hosting/errors2.txt"), error, true);
+			FileUtils.write(logFile, error, true);
 			return;
 		}
 		StringBuilder builder = new StringBuilder("");
